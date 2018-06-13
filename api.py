@@ -1,0 +1,36 @@
+from flask import Flask, g
+from redisdb import RedisClient
+
+app = Flask(__name__)
+
+def get_conn():
+	if not hasattr(g, 'redis'):
+		g.redis = RedisClient()
+	return g.redis
+
+@app.route('/')
+def index():
+	return "<h2>Welcome to proxy Pool System</h2>"
+
+@app.route('/random')
+def get_proxy():
+	"""
+	获取随机单个可用代理
+	:return:
+	"""
+	conn = get_conn()
+	return conn.random()
+
+@app.route('/count')
+def get_counts():
+	"""
+	获取代理总量
+	:return:
+	"""
+	conn = get_conn()
+	return str(conn.count())
+
+
+
+if __name__ == '__main__':
+	app.run()
